@@ -16,6 +16,10 @@
   },
   "license": "MIT",
   "main": "./lib/autocomplete-snippets",
+  "files": [
+    "lib",
+    "spec"
+  ],
   "engines": {
     "lumine": "^1.0.0"
   },
