@@ -2,12 +2,12 @@ describe("AutocompleteSnippets", () => {
   let [completionDelay, editor, editorView] = [];
 
   beforeEach(() => {
-    atom.config.set("autocomplete.enableAutoActivation", true);
+    lumine.config.set("autocomplete.enableAutoActivation", true);
     completionDelay = 100;
-    atom.config.set("autocomplete.autoActivationDelay", completionDelay);
+    lumine.config.set("autocomplete.autoActivationDelay", completionDelay);
     completionDelay += 100; // Rendering delay
 
-    const workspaceElement = atom.views.getView(atom.workspace);
+    const workspaceElement = lumine.views.getView(lumine.workspace);
     jasmine.attachToDOM(workspaceElement);
 
     let autocompleteSnippetsMainModule = null;
@@ -15,18 +15,18 @@ describe("AutocompleteSnippets", () => {
 
     waitsForPromise(() =>
       Promise.all([
-        atom.workspace.open("sample.js").then((e) => {
+        lumine.workspace.open("sample.js").then((e) => {
           editor = e;
-          editorView = atom.views.getView(editor);
+          editorView = lumine.views.getView(editor);
         }),
 
-        atom.packages.activatePackage("language-javascript"),
-        atom.packages
+        lumine.packages.activatePackage("language-javascript"),
+        lumine.packages
           .activatePackage("autocomplete-snippets")
           .then(({ mainModule }) => (autocompleteSnippetsMainModule = mainModule)),
 
-        atom.packages.activatePackage("autocomplete"),
-        atom.packages.activatePackage("snippets").then(({ mainModule }) => {
+        lumine.packages.activatePackage("autocomplete"),
+        lumine.packages.activatePackage("snippets").then(({ mainModule }) => {
           snippetsMainModule = mainModule;
           snippetsMainModule.loaded = false;
         }),
@@ -80,7 +80,7 @@ describe("AutocompleteSnippets", () => {
       );
 
       runs(() => {
-        atom.commands.dispatch(editorView, "autocomplete:confirm");
+        lumine.commands.dispatch(editorView, "autocomplete:confirm");
         expect(editor.getText()).toContain("} while (true)");
       });
     });
