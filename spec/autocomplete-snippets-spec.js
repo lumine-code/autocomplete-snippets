@@ -1,7 +1,7 @@
 describe("AutocompleteSnippets", () => {
   let [completionDelay, editor, editorView] = [];
 
-  beforeEach(() => {
+  beforeEach(async () => {
     lumine.config.set("autocomplete.enableAutoActivation", true);
     completionDelay = 100;
     lumine.config.set("autocomplete.autoActivationDelay", completionDelay);
@@ -13,76 +13,70 @@ describe("AutocompleteSnippets", () => {
     let autocompleteSnippetsMainModule = null;
     let snippetsMainModule = null;
 
-    waitsForPromise(() =>
-      Promise.all([
-        lumine.workspace.open("sample.js").then((e) => {
-          editor = e;
-          editorView = lumine.views.getView(editor);
-        }),
+    await Promise.all([
+      lumine.workspace.open("sample.js").then((e) => {
+        editor = e;
+        editorView = lumine.views.getView(editor);
+      }),
 
-        lumine.packages.activatePackage("language-javascript"),
-        lumine.packages
-          .activatePackage("autocomplete-snippets")
-          .then(({ mainModule }) => (autocompleteSnippetsMainModule = mainModule)),
+      lumine.packages.activatePackage("language-javascript"),
+      lumine.packages
+        .activatePackage("autocomplete-snippets")
+        .then(({ mainModule }) => (autocompleteSnippetsMainModule = mainModule)),
 
-        lumine.packages.activatePackage("autocomplete"),
-        lumine.packages.activatePackage("snippets").then(({ mainModule }) => {
-          snippetsMainModule = mainModule;
-          snippetsMainModule.loaded = false;
-        }),
-      ]),
-    );
+      lumine.packages.activatePackage("autocomplete"),
+      lumine.packages.activatePackage("snippets").then(({ mainModule }) => {
+        snippetsMainModule = mainModule;
+        snippetsMainModule.loaded = false;
+      }),
+    ]);
 
-    waitsFor(
+    await conditionPromise(
+      () => autocompleteSnippetsMainModule.provider != null,
       "snippets provider to be registered",
       1000,
-      () => autocompleteSnippetsMainModule.provider != null,
     );
 
-    waitsFor("all snippets to load", 3000, () => snippetsMainModule.loaded);
+    await conditionPromise(() => snippetsMainModule.loaded, "all snippets to load", 3000);
   });
 
   describe("when autocomplete is enabled", () => {
-    it("shows autocompletions when there are snippets available", () => {
-      runs(() => {
-        expect(editorView.querySelector(".autocomplete")).not.toExist();
+    it("shows autocompletions when there are snippets available", async () => {
+      expect(editorView.querySelector(".autocomplete")).not.toExist();
 
-        editor.moveToBottom();
-        editor.insertText("D");
-        editor.insertText("o");
+      editor.moveToBottom();
+      editor.insertText("D");
+      editor.insertText("o");
 
-        advanceClock(completionDelay);
-      });
+      advanceClock(completionDelay);
 
-      waitsFor("autocomplete view to appear", 1000, () =>
-        editorView.querySelector(".autocomplete span.word"),
+      await conditionPromise(
+        () => editorView.querySelector(".autocomplete span.word"),
+        "autocomplete view to appear",
+        1000,
       );
 
-      runs(() => {
-        expect(editorView.querySelector(".autocomplete span.word")).toHaveText("do");
-        expect(editorView.querySelector(".autocomplete span.right-label")).toHaveText("do");
-      });
+      expect(editorView.querySelector(".autocomplete span.word")).toHaveText("do");
+      expect(editorView.querySelector(".autocomplete span.right-label")).toHaveText("do");
     });
 
-    it("expands the snippet on confirm", () => {
-      runs(() => {
-        expect(editorView.querySelector(".autocomplete")).not.toExist();
+    it("expands the snippet on confirm", async () => {
+      expect(editorView.querySelector(".autocomplete")).not.toExist();
 
-        editor.moveToBottom();
-        editor.insertText("D");
-        editor.insertText("o");
+      editor.moveToBottom();
+      editor.insertText("D");
+      editor.insertText("o");
 
-        advanceClock(completionDelay);
-      });
+      advanceClock(completionDelay);
 
-      waitsFor("autocomplete view to appear", 1000, () =>
-        editorView.querySelector(".autocomplete span.word"),
+      await conditionPromise(
+        () => editorView.querySelector(".autocomplete span.word"),
+        "autocomplete view to appear",
+        1000,
       );
 
-      runs(() => {
-        lumine.commands.dispatch(editorView, "autocomplete:confirm");
-        expect(editor.getText()).toContain("} while (true)");
-      });
+      lumine.commands.dispatch(editorView, "autocomplete:confirm");
+      expect(editor.getText()).toContain("} while (true)");
     });
   });
 
