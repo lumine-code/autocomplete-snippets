@@ -9,12 +9,12 @@ Adds snippets to autocomplete suggestions.
 
 ## Installation
 
-To install `autocomplete-snippets` search for _autocomplete-snippets_ in the Install pane of the Lumine settings or run `lumine --install lumine-code/autocomplete-snippets`.
+To install `autocomplete-snippets` search for it in the Install pane of the Lumine settings, or run the command `lumine --install lumine-code/autocomplete-snippets`.
 
 ## Services
 
-- **autocomplete.provider** (`1.0.0`): provided to supply snippet suggestions to autocomplete.
-- **snippets** (`^1.0.0`): consumed to read the available snippets to build suggestions.
+- `autocomplete.provider`: provided to supply snippet suggestions to autocomplete.
+- `snippets`: consumed to read the available snippets to build suggestions.
 
 ## Contributing
 
