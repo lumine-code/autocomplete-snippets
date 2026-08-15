@@ -34,10 +34,9 @@ describe("AutocompleteSnippets", () => {
     await conditionPromise(
       () => autocompleteSnippetsMainModule.provider != null,
       "snippets provider to be registered",
-      1000,
     );
 
-    await conditionPromise(() => snippetsMainModule.loaded, "all snippets to load", 3000);
+    await conditionPromise(() => snippetsMainModule.loaded, "all snippets to load");
   });
 
   describe("when autocomplete is enabled", () => {
@@ -53,7 +52,6 @@ describe("AutocompleteSnippets", () => {
       await conditionPromise(
         () => editorView.querySelector(".autocomplete span.word"),
         "autocomplete view to appear",
-        1000,
       );
 
       expect(editorView.querySelector(".autocomplete span.word")).toHaveText("do");
@@ -72,7 +70,6 @@ describe("AutocompleteSnippets", () => {
       await conditionPromise(
         () => editorView.querySelector(".autocomplete span.word"),
         "autocomplete view to appear",
-        1000,
       );
 
       lumine.commands.dispatch(editorView, "autocomplete:confirm");
