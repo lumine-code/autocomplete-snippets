@@ -1,5 +1,11 @@
+const path = require("path");
+
+const WORKSPACE_ROOT = path.join(__dirname, "..", "..");
+const packagePath = (name) => path.join(WORKSPACE_ROOT, name);
+
 describe("AutocompleteSnippets", () => {
-  let [completionDelay, editor, editorView] = [];
+  let [autocompleteSnippetsMainModule, completionDelay, editor, editorView, snippetsMainModule] =
+    [];
 
   beforeEach(async () => {
     lumine.config.set("autocomplete.enableAutoActivation", true);
@@ -10,8 +16,8 @@ describe("AutocompleteSnippets", () => {
     const workspaceElement = lumine.views.getView(lumine.workspace);
     jasmine.attachToDOM(workspaceElement);
 
-    let autocompleteSnippetsMainModule = null;
-    let snippetsMainModule = null;
+    autocompleteSnippetsMainModule = null;
+    snippetsMainModule = null;
 
     await Promise.all([
       lumine.workspace.open("sample.js").then((e) => {
@@ -19,15 +25,14 @@ describe("AutocompleteSnippets", () => {
         editorView = lumine.views.getView(editor);
       }),
 
-      lumine.packages.activatePackage("language-javascript"),
+      lumine.packages.activatePackage(packagePath("language-javascript")),
       lumine.packages
-        .activatePackage("autocomplete-snippets")
+        .activatePackage(packagePath("autocomplete-snippets"))
         .then(({ mainModule }) => (autocompleteSnippetsMainModule = mainModule)),
 
-      lumine.packages.activatePackage("autocomplete"),
-      lumine.packages.activatePackage("snippets").then(({ mainModule }) => {
+      lumine.packages.activatePackage(packagePath("autocomplete")),
+      lumine.packages.activatePackage(packagePath("snippets")).then(({ mainModule }) => {
         snippetsMainModule = mainModule;
-        snippetsMainModule.loaded = false;
       }),
     ]);
 
@@ -36,7 +41,12 @@ describe("AutocompleteSnippets", () => {
       "snippets provider to be registered",
     );
 
-    await conditionPromise(() => snippetsMainModule.loaded, "all snippets to load");
+    // Package activation readiness includes the complete async snippet scan and
+    // publication of the snippets service to this consumer.
+    expect(snippetsMainModule.loaded).toBe(true);
+    expect(autocompleteSnippetsMainModule.provider.snippetsSource).not.toBe(
+      autocompleteSnippetsMainModule.provider.defaultSnippetsSource,
+    );
   });
 
   describe("when autocomplete is enabled", () => {
