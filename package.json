@@ -24,7 +24,9 @@
     "lumine": "^1.0.0"
   },
   "specPackages": [
-    "autocomplete"
+    "autocomplete",
+    "language-javascript",
+    "snippets"
   ],
   "scripts": {
     "test": "lumine --test spec",

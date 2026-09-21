@@ -36,6 +36,8 @@ describe("AutocompleteSnippets", () => {
       }),
     ]);
 
+    await snippetsMainModule.waitForSnippetsLoaded();
+
     await conditionPromise(
       () => autocompleteSnippetsMainModule.provider != null,
       "snippets provider to be registered",
