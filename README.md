@@ -2,6 +2,8 @@
 
 Adds snippets to autocomplete suggestions.
 
+Fork of [pulsar-edit/pulsar](https://github.com/pulsar-edit/pulsar) (`packages/autocomplete-snippets`).
+
 > [!WARNING]
 > **This package is deprecated.** Snippet completion now ships with [snippets](https://github.com/lumine-code/snippets). This repository is archived and no longer maintained.
 
